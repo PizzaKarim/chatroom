@@ -12,6 +12,10 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * The client class.
+ * It listens for input and communicates with the server using packets.
+ */
 public final class Client implements AutoCloseable {
 
     private final Socket socket;
@@ -33,17 +37,23 @@ public final class Client implements AutoCloseable {
         this.connected = true;
     }
 
+    /**
+     * Gets the connected state of this client.
+     * @return true if the client is connected, otherwise false
+     */
     public boolean isConnected() {
         return connected;
     }
 
+    /**
+     * Sends a packet to the server.
+     * @param packet the packet
+     */
     public void sendPacket(@NotNull Packet packet) {
         try {
             out.writeObject(packet);
             out.flush();
-        } catch (SocketException e) {
-            if (e.getMessage().equals("Socket closed")) return;
-            throw new RuntimeException(e);
+        } catch (SocketException ignored) {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -57,16 +67,23 @@ public final class Client implements AutoCloseable {
         }
     }
 
+    /**
+     * Disconnects this client from the server.
+     */
     @Override
     public void close() throws Exception {
         if (!connected) return;
         sendPacket(new ExitPacket());
         connected = false;
+        System.in.close();
         socket.close();
         listenThread.join();
         inputThread.join();
     }
 
+    /**
+     * The program entry point. The client is initialized here.
+     */
     public static void main(String[] args) {
         try (Client client = new Client(3000)) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> { // In case of SIGINT signal (CTRL + C)

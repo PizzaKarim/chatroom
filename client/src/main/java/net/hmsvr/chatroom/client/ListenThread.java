@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.SocketException;
 
+/**
+ * A thread that listens for incoming packets and
+ * forwards them to the {@link EventDispatcher} as a new {@link PacketEvent}.
+ */
 public final class ListenThread extends Thread {
 
     public ListenThread(@NotNull Client client, @NotNull ObjectInputStream in, @NotNull EventDispatcher dispatcher) {
@@ -18,7 +22,7 @@ public final class ListenThread extends Thread {
                 try {
                     Object object = in.readObject();
                     if (!(object instanceof Packet packet)) throw new RuntimeException("Unrecognized message");
-                    dispatcher.add(new PacketEvent(client, packet));
+                    dispatcher.add(new PacketEvent(client, packet, dispatcher));
                 } catch (EOFException ignored) {
                 } catch (SocketException e) {
                     break;

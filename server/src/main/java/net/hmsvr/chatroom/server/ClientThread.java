@@ -2,6 +2,7 @@ package net.hmsvr.chatroom.server;
 
 import net.hmsvr.chatroom.server.event.ConnectionEvent;
 import net.hmsvr.chatroom.server.event.EventDispatcher;
+import net.hmsvr.chatroom.server.event.InputEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -9,6 +10,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * A thread that listens for client connections and
+ * forwards them to the {@link EventDispatcher} as a new {@link ConnectionEvent}.
+ */
 public final class ClientThread extends Thread {
 
     public ClientThread(@NotNull Server server, @NotNull ServerSocket serverSocket, @NotNull EventDispatcher dispatcher) {

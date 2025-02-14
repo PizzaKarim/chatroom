@@ -8,6 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * A thread that listens for input from the standard input stream ({@link System#in}) and
+ * forwards them to the {@link EventDispatcher} as a new {@link InputEvent}.
+ * When the client disconnects, an {@link ExitEvent} will be dispatched instead.
+ */
 public final class InputThread extends Thread {
 
     public InputThread(@NotNull Client client, @NotNull EventDispatcher dispatcher) {
@@ -20,6 +25,7 @@ public final class InputThread extends Thread {
                     dispatcher.add(new InputEvent(client, string));
                 } catch (NoSuchElementException e) { break; }
             }
+            scanner.close();
             dispatcher.add(new ExitEvent(client));
         });
     }
